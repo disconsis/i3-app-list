@@ -1,0 +1,64 @@
+#  _ _____                               _ _     _
+# (_)___ /        __ _ _ __  _ __       | (_)___| |_
+# | | |_ \ _____ / _` | '_ \| '_ \ _____| | / __| __|
+# | |___) |_____| (_| | |_) | |_) |_____| | \__ \ |_
+# |_|____/       \__,_| .__/| .__/      |_|_|___/\__|
+#                     |_|   |_|
+#           _   _   _
+#  ___  ___| |_| |_(_)_ __   __ _ ___
+# / __|/ _ \ __| __| | '_ \ / _` / __|
+# \__ \  __/ |_| |_| | | | | (_| \__ \
+# |___/\___|\__|\__|_|_| |_|\__, |___/
+#                           |___/
+
+debug: true
+
+parts:
+    separator:
+        str: ": "
+        fg: null
+        bg: null
+
+name:
+    max_len: 999
+
+num:
+    min: 1
+    max: 9
+
+apps:
+    separator:
+        str: " "
+        fg: null
+        bg: null
+    focused:
+        fg: lime
+        bg: null
+    unfocused:
+        fg: null
+        bg: null
+
+glyphs:
+    download_manager:       
+    browser:                
+    youtube:                
+    tor:                    
+    ebook_reader:           
+    virtual_machine:        
+    media_player:           
+    wireshark:              
+    terminal:               
+    file_browser:           
+    image_viewer:           
+    fontforge:              
+    office:                 
+    gvim:                   
+    editor:                 
+    spim:                   
+    android_studio:         
+    burp_suite:             
+    skype:                  
+    gephi:                  ﱩ
+    ida:                    
+    steam:                  
+    undefined:              
