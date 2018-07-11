@@ -1,0 +1,6 @@
+enum-compat==0.0.2
+i3ipc==1.5.1
+munch==2.3.2
+PyYAML==3.13
+six==1.11.0
+yamale==1.7.0
