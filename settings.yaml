@@ -34,7 +34,6 @@ apps:
 glyphs:
     download_manager:       
     browser:                
-    youtube:                
     tor:                    
     ebook_reader:           
     virtual_machine:        
@@ -47,7 +46,6 @@ glyphs:
     office:                 
     gvim:                   
     editor:                 
-    spim:                   
     android_studio:         
     burp_suite:             
     skype:                  
