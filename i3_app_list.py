@@ -110,6 +110,7 @@ class Settings:
         self.validate_settings_file(_file)
         self._file = _file
         self.read_settings_file()
+        self._create_sensible_attrs()
 
     @staticmethod
     def validate_settings_file(_file):
@@ -132,6 +133,9 @@ class Settings:
             contents = yaml.load(fp)
         munched_dict = munch.munchify(contents)
         self.__dict__.update(**munched_dict)
+
+    def _create_sensible_attrs(self):
+        """mofify object's attrs to more sensible data strucutres"""
 
         # create separators from settings
         self.parts.separator = color(
