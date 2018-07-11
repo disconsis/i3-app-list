@@ -13,7 +13,7 @@ import inspect
 
 
 def is_app_definition(f):
-    return f.__name__.startswith('is_') and inspect.isfunction(f)
+    return inspect.isfunction(f) and f.__name__.startswith("is_")
 
 
 def get_app_name(app_def):
