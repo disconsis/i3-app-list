@@ -79,8 +79,6 @@ class App:
         :rtype: str
         """
         try:
-        except AttributeError:
-            pass
             glyph = app_definition.get_glyph(self, self.settings.glyphs)
             if glyph is not None:
                 return glyph
