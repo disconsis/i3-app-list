@@ -4,8 +4,8 @@
 import app_definition
 import i3ipc
 import argparse
-import pyrx  # use to validate
 import yaml
+import yamale
 import munch
 import os
 from collections import defaultdict
@@ -102,18 +102,19 @@ class Settings:
 
     """class for user configuration."""
 
+    SCHEMA_FILE = "./settings.yaml"
+
     def __init__(self, _file):
         """
         :param _file: file to read settins from
         :type _file: str
         """
-        self.validate_settings_file(_file)
         self._file = _file
         self.read_settings_file()
         self._create_sensible_attrs()
 
-    @staticmethod
-    def validate_settings_file(_file):
+    @classmethod
+    def validate_settings_file(cls, _file):
         """validate the structure of  the settings file. raise
         :class:`ValidationError` if found invalid.
 
@@ -121,9 +122,12 @@ class Settings:
         :type file: str
         :raises: :class:`ValidationError`
         """
-        assert os.path.exists(_file), \
-            ValidationError("config file doesn't exist")
-        # must have `unknown` glyph
+        schema = yamale.make_schema(cls.SCHEMA_FILE)
+        try:
+            data = yamale.make_data(_file)
+            yamale.validate(schema, data)
+        except (OSError, ValueError) as e:
+            raise ValidationError(e)
 
     def read_settings_file(self):
         """parse the settings file and populate user settings.
