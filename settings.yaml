@@ -19,10 +19,6 @@ parts:
         fg: null
         bg: null
 
-num:
-    fg: null
-    bg: null
-
 apps:
     separator:
         str: " "
