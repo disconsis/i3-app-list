@@ -174,7 +174,7 @@ class Workspace:
         """return a string representation to be printed on workspace
         buttons.
         """
-        num = str(self.num)
+        num = color(str(self.num), self.settings.num.fg, self.settings.num.bg)
         apps_str = self.settings.apps.separator.join(
             str(app) for app in self.apps
         )

@@ -25,6 +25,8 @@ name:
 num:
     min: 1
     max: 9
+    fg: null
+    bg: null
 
 apps:
     separator:
