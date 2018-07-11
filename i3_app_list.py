@@ -65,25 +65,25 @@ class App:
         return getattr(self._con, attr)
 
     @property
-    def icon(self):
+    def glyph(self):
         """get a small string representation for the app.
         try to get it from the user-customized module
         :module:`app_definition`. in case of exceptions,
         simply return the `undefined` glyph.
         if `debug` is true, break the program for everything other
         than an AttributeError (since that can be caused by the config
-        file not having an entry for an icon class name referenced by
+        file not having an entry for an glyph class name referenced by
         the module :module:`app_definition`)
 
         :return: repr for the app
         :rtype: str
         """
         try:
-            icon = app_definition.get_icon(self, self.settings.glyphs)
-            if icon is not None:
-                return icon
         except AttributeError:
             pass
+            glyph = app_definition.get_glyph(self, self.settings.glyphs)
+            if glyph is not None:
+                return glyph
         except Exception as e:
             if self.settings.debug is True:
                 raise e
@@ -97,7 +97,7 @@ class App:
         """
         color_group = self.settings.apps.focused if self.focused \
             else self.settings.apps.unfocused
-        return color(self.icon, color_group.fg, color_group.bg)
+        return color(self.glyph, color_group.fg, color_group.bg)
 
 
 class Settings:

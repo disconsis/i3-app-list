@@ -1,9 +1,10 @@
-def get_icon(app, glyphs):
-    """get an icon class for the given app
 
-    :param app: application to get an icon class name for
+def get_glyph(app, glyphs):
+    """choose a glyph for the app.
+
+    :param app: app to get glyph for
     :type app: :class:`i3_app_list.App`
-    :returns: class name of icon for app
+    :returns: glyph for app
     :rtype: str
     """
 
