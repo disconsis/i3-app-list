@@ -19,12 +19,7 @@ parts:
         fg: null
         bg: null
 
-name:
-    max_len: 999
-
 num:
-    min: 1
-    max: 9
     fg: null
     bg: null
 
