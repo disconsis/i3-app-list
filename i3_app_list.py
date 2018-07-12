@@ -252,7 +252,9 @@ class Tree:
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-c", "--config-file", default="settings.yaml")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("-c", "--config-file", default="settings.yaml")
+    group.add_argument("-l", "--list-apps", action="store_true")
     return parser.parse_args()
 
 
@@ -261,10 +263,17 @@ def rename_everything(i3, event, settings):
     tree.output()
 
 
-def main():
-    args = parse_args()
+def list_applications(i3):
+    for window in i3.get_tree().leaves():
+        print(
+            "name: {:80}\nclass: {}\ninstance: {}".format(
+                window.name, window.window_class, window.window_instance
+        ))
+        print('---')
+
+
+def run(i3, args):
     settings = Settings(args.config_file)
-    i3 = i3ipc.Connection()
     rename_everything(i3, None, settings)
 
     event_handler = partial(rename_everything, settings=settings)
@@ -274,6 +283,15 @@ def main():
     i3.on('window::title', event_handler)
     i3.on('window::close', event_handler)
     i3.main()
+
+
+def main():
+    args = parse_args()
+    i3 = i3ipc.Connection()
+    if args.list_apps:
+        list_applications(i3)
+    else:
+        run(i3, args)
 
 
 if __name__ == "__main__":
