@@ -1,0 +1,22 @@
+debug: bool()
+
+parts:
+    separator:
+        str: str()
+        fg: any(str(), null())
+        bg: any(str(), null())
+
+apps:
+    separator:
+        str: str()
+        fg: any(str(), null())
+        bg: any(str(), null())
+    focused:
+        fg: any(str(), null())
+        bg: any(str(), null())
+    unfocused:
+        fg: any(str(), null())
+        bg: any(str(), null())
+
+glyphs:
+    undefined: str()
