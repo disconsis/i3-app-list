@@ -6,10 +6,6 @@ parts:
         fg: any(str(), null())
         bg: any(str(), null())
 
-num:
-    fg: any(str(), null())
-    bg: any(str(), null())
-
 apps:
     separator:
         str: str()
