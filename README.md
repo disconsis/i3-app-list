@@ -73,7 +73,7 @@ Currently supported applications:
 * steam
 * burp suite
 * gephi
-If something you use is not on this list (which is very probable), see [extending](#Extending).
+If something you use is not on this list (which is very probable), see [extending](#extending).
 
 # Extending
 Adding support for new applications is extremely straightforward. 
