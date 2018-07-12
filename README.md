@@ -82,19 +82,19 @@ Steps: (for application `example`)
 * Run `python3 i3_app_list.py -l`
     * This prints a list of all running applications, each with their name, class, and instance.
     * Locate the ones for `example` - say, `example_name`, `example_class`, and `example_instance`
-* Add a function in [app_definition.py] under the class `AppDefinition`.
+* Add a function in [app_definition.py](app_definition.py) under the class `AppDefinition`.
 ```python
         def is_example(app):
             return app.class_ == "example_class"  # simplest, most common case
 ```
-* Add a glyph in [settings.yaml]
+* Add a glyph in [settings.yaml](settings.yaml)
 ```yaml
         glyphs:
             example: Ex
 ```
 
 # Customization
-Settings are listed in [settings.yaml].  
+Settings are listed in [settings.yaml](settings.yaml).  
 Each glyph is a unicode string, so using Nerdfonts or similar allows for a lot of options.  
 Glyphs can be customized for each application.  
 In addition, you can choose colors and separators.  
