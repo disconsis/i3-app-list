@@ -10,6 +10,7 @@ import munch
 import os
 from collections import defaultdict
 from functools import partial
+import daemon
 
 
 def color(text, fgcolor=None, bgcolor=None):
@@ -263,7 +264,8 @@ def rename_everything(i3, event, settings):
     tree.output()
 
 
-def list_applications(i3):
+def list_applications():
+    i3 = i3ipc.Connection()
     for window in i3.get_tree().leaves():
         print(
             "name: {:80}\nclass: {}\ninstance: {}".format(
@@ -272,7 +274,8 @@ def list_applications(i3):
         print('---')
 
 
-def run(i3, args):
+def run(args):
+    i3 = i3ipc.Connection()
     settings = Settings(args.config_file)
     rename_everything(i3, None, settings)
 
@@ -287,11 +290,11 @@ def run(i3, args):
 
 def main():
     args = parse_args()
-    i3 = i3ipc.Connection()
     if args.list_apps:
-        list_applications(i3)
+        list_applications()
     else:
-        run(i3, args)
+        with daemon.DaemonContext(working_directory=os.getcwd()):
+            run(args)
 
 
 if __name__ == "__main__":
