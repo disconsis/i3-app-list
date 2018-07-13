@@ -251,6 +251,7 @@ class Tree:
 
 
 def parse_args():
+    """parse command line arguments."""
     parser = argparse.ArgumentParser()
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-c", "--config-file", default="settings.yaml")
@@ -259,11 +260,14 @@ def parse_args():
 
 
 def rename_everything(i3, event, settings):
+    """i3 callback - rename all workspaces for any event."""
     tree = Tree(i3, settings)
     tree.output()
 
 
 def list_applications(i3):
+    """print the details of all running applications. helpful when
+    writing app definitions."""
     for window in i3.get_tree().leaves():
         print(
             "name: {:80}\nclass: {}\ninstance: {}".format(
@@ -273,6 +277,7 @@ def list_applications(i3):
 
 
 def run(i3, args):
+    """run the i3 event loop."""
     settings = Settings(args.config_file)
     rename_everything(i3, None, settings)
 
