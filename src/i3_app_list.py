@@ -161,7 +161,7 @@ class Workspace:
 
     """Workspace class based on top of :class:`i3ipc.i3ipc.Con`."""
 
-    def __init__(self, con, settings, i3):
+    def __init__(self, con, settings, i3, custom_name=None, num=None):
         """
         :param settings: user settings
         :type settings: :class:`Settings`
@@ -169,11 +169,18 @@ class Workspace:
         :type con: :class:`i3ipc.i3ipc.Con`
         :param i3: i3 connection to use
         :type i3: :class:`i3ipc.i3ipc.Connection`
+        :param custom_name: custom name to use for workspace
+        :type custom_name: str or None
+        :param num: workspace num to set to
+        :type num: int
         """
         self._con = con
         self.settings = settings
         self.i3 = i3
         self.apps = []
+        if num is not None:
+            self._con.num = num
+        self.custom_name = custom_name
 
     def __str__(self):
         """return a string representation to be printed on workspace
@@ -184,7 +191,7 @@ class Workspace:
             str(app) for app in self.apps
         )
         return self.settings.parts.separator.join(
-            filter(bool, [num, apps_str])
+            filter(bool, [num, self.custom_name, apps_str])
         )
 
     def __getattr__(self, attr):
@@ -209,7 +216,7 @@ class Tree:
 
     """Class for  i3 tree."""
 
-    def __init__(self, i3, settings):
+    def __init__(self, i3, settings, custom_names=None):
         """
         :param i3: TODO
         :param settings: TODO
@@ -218,6 +225,7 @@ class Tree:
 
         self.i3 = i3
         self.settings = settings
+        self.custom_names = custom_names if custom_names is not None else {}
         self.workspaces = self.get_workspaces()
 
     def get_apps(self):
@@ -240,13 +248,36 @@ class Tree:
         :rtype: list
         """
         workspaces = [
-            Workspace(ws_con, self.settings, self.i3)
+            Workspace(ws_con, self.settings, self.i3,
+                      custom_name=self.custom_names.get(ws_con.id))
             for ws_con in self.i3.get_tree().workspaces()
         ]
         workspace_apps = self.get_apps()
         for workspace in workspaces:
             workspace.apps = workspace_apps[workspace.id]
         return workspaces
+
+    def get_workspace(self, _id):
+        """get a workspace from the tree which has the given id.
+
+        :param _id: workspace id to match
+        :type _id: int
+        :returns: worspace from the tree which has that id, if it exists
+        :rtype: :class:`Workspace` or None
+        """
+        for workspace in self.workspaces:
+            if workspace.id == _id:
+                return workspace
+
+    def set_workspace_num(self, _id, num):
+        """set the number of a workspace which has the given id.
+
+        :param _id: workspace id to match
+        :type _id: int
+        :param num: what to set workspace number to
+        :type num: int
+        """
+        self.get_workspace(_id).num = num
 
     def output(self):
         """print tree to bar."""
@@ -261,6 +292,7 @@ class Watcher:
         self.i3 = i3ipc.Connection()
         self.settings = settings
         self.tree = Tree(self.i3, self.settings)
+        self.custom_names = {}
         self.subscribe()
 
     def subscribe(self):
@@ -273,11 +305,44 @@ class Watcher:
         self.i3.on("window::new", self.rename_everything)
         self.i3.on("window::close", self.rename_everything)
 
+    def gc_custom_names(self):
+        """remove records of custom names of workspaces that have
+        disappeared. if we don't do this then `custom_names` will slowly
+        accumulate a lot of entries for workspaces which have
+        disappeared because of losing all apps.
+        """
+        workspace_ids = {workspace.id for workspace in self.tree.workspaces}
+        for workspace_id in tuple(self.custom_names.keys()):
+            if workspace_id not in workspace_ids:
+                del self.custom_names[workspace_id]
+
     def on_workspace_rename(self, i3, event):
-        pass
+        """if workspace name changed externally, use it as the custom
+        name for the workspace and print workspaces to bar.
+        """
+        event_ws = event.current
+        if event_ws.name == str(event_ws.num) or \
+                event_ws.name.startswith(str(event_ws.num)
+                                         + self.settings.parts.separator):
+            # if new name is of the form
+            # "<num>" or "<num><separator>...",
+            # then we assume that the change was internal
+            return
+
+        self.custom_names[event_ws.id] = event_ws.name.strip()
+        # only garbage collect custom names when we add one
+        self.gc_custom_names()
+        # store workspace name and set it for the new tree,
+        # because if a workspace name doesn't start with a
+        # number, then it is set to `-1`
+        workspace_num = self.tree.get_workspace(event_ws.id).num
+        self.tree = Tree(self.i3, self.settings, self.custom_names)
+        self.tree.set_workspace_num(event_ws.id, workspace_num)
+        self.tree.output()
 
     def rename_everything(self, *args):
-        self.tree = Tree(self.i3, self.settings)
+        """get a new tree and print every workspace to bar."""
+        self.tree = Tree(self.i3, self.settings, self.custom_names)
         self.tree.output()
 
     def run(self):
