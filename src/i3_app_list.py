@@ -197,9 +197,12 @@ class Workspace:
         """print workspace to bar."""
         # workspace names have to be wrapped in double quotes
         # single quotes don't work, for some reason
-        self.i3.command('rename workspace "{old}" to "{new}"'.format(
-            old=self.name, new=str(self)
-        ))
+        new_name = str(self)
+        if new_name != self.name:
+            self.i3.command('rename workspace "{old}" to "{new}"'.format(
+                old=self.name, new=new_name
+            ))
+            self.name = new_name
 
 
 class Tree:
