@@ -254,6 +254,37 @@ class Tree:
             workspace.output()
 
 
+class Watcher:
+    """Watch for i3 events and rename workspaces."""
+
+    def __init__(self, settings):
+        self.i3 = i3ipc.Connection()
+        self.settings = settings
+        self.tree = Tree(self.i3, self.settings)
+        self.subscribe()
+
+    def subscribe(self):
+        """subscribe to i3 events."""
+        self.i3.on("workspace::rename", self.on_workspace_rename)
+        self.i3.on("workspace::focus", self.rename_everything)
+        self.i3.on("window::focus", self.rename_everything)
+        self.i3.on("window::move", self.rename_everything)
+        self.i3.on("window::title", self.rename_everything)
+        self.i3.on("window::new", self.rename_everything)
+        self.i3.on("window::close", self.rename_everything)
+
+    def on_workspace_rename(self, i3, event):
+        pass
+
+    def rename_everything(self, *args):
+        self.tree = Tree(self.i3, self.settings)
+        self.tree.output()
+
+    def run(self):
+        self.rename_everything()
+        self.i3.main()
+
+
 def parse_args():
     """parse command line arguments."""
     parser = argparse.ArgumentParser()
@@ -261,12 +292,6 @@ def parse_args():
     group.add_argument("-c", "--config-file", default="settings.yaml")
     group.add_argument("-l", "--list-apps", action="store_true")
     return parser.parse_args()
-
-
-def rename_everything(i3, event, settings):
-    """i3 callback - rename all workspaces for any event."""
-    tree = Tree(i3, settings)
-    tree.output()
 
 
 def list_applications():
@@ -282,18 +307,10 @@ def list_applications():
 
 
 def run(args):
-    """run the i3 event loop."""
-    i3 = i3ipc.Connection()
+    """start the watcher."""
     settings = Settings(args.config_file)
-    rename_everything(i3, None, settings)
-
-    event_handler = partial(rename_everything, settings=settings)
-    i3.on('workspace::focus', event_handler)
-    i3.on('window::focus', event_handler)
-    i3.on('window::move', event_handler)
-    i3.on('window::title', event_handler)
-    i3.on('window::close', event_handler)
-    i3.main()
+    watcher = Watcher(settings)
+    watcher.run()
 
 
 def main():
