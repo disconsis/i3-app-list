@@ -159,18 +159,18 @@ class Settings:
 
 class Workspace:
 
-    """Workspace class based on top of
-    :class:`i3ipc.i3ipc.WorkspaceReply`.
-    """
+    """Workspace class based on top of :class:`i3ipc.i3ipc.Con`."""
 
-    def __init__(self, reply, settings, i3):
+    def __init__(self, con, settings, i3):
         """
         :param settings: user settings
         :type settings: :class:`Settings`
-        :param reply: i3 workspace reply to use for name, num, etc
-        :type reply: :class:`i3ipc.i3ipc.WorkspaceReply`
+        :param con: i3 workspace Con to use for name, num, etc
+        :type con: :class:`i3ipc.i3ipc.Con`
+        :param i3: i3 connection to use
+        :type i3: :class:`i3ipc.i3ipc.Connection`
         """
-        self._reply = reply
+        self._con = con
         self.settings = settings
         self.i3 = i3
         self.apps = []
@@ -189,9 +189,9 @@ class Workspace:
 
     def __getattr__(self, attr):
         """delegate to the underlying
-        :class`i3ipc.i3ipc.WorkspaceReply`'s.
+        :class`i3ipc.i3ipc.Con`.
         """
-        return getattr(self._reply, attr)
+        return getattr(self._con, attr)
 
     def output(self):
         """print workspace to bar."""
@@ -229,7 +229,7 @@ class Tree:
         apps = [App(app, self.settings) for app in self.i3.get_tree().leaves()]
         ws_app_mapping = defaultdict(list)
         for app in apps:
-            ws_app_mapping[app.workspace().num].append(app)
+            ws_app_mapping[app.workspace().id].append(app)
         return ws_app_mapping
 
     def get_workspaces(self):
@@ -240,12 +240,12 @@ class Tree:
         :rtype: list
         """
         workspaces = [
-            Workspace(ws_reply, self.settings, self.i3)
-            for ws_reply in self.i3.get_workspaces()
+            Workspace(ws_con, self.settings, self.i3)
+            for ws_con in self.i3.get_tree().workspaces()
         ]
         workspace_apps = self.get_apps()
         for workspace in workspaces:
-            workspace.apps = workspace_apps[workspace.num]
+            workspace.apps = workspace_apps[workspace.id]
         return workspaces
 
     def output(self):
