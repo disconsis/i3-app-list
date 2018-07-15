@@ -11,6 +11,7 @@ o  /   \                          | | o
 # What
 Add glyphs for each application to the workspace name.  
 The glyph for the currently focused application is highlighted.  
+Workspaces can still be renamed - these are displayed along with the app glyphs.  
   
 ![screenshot](demo/screenshot.png)
 
@@ -33,6 +34,16 @@ For example, we choose the `browser` glyph if the window class is any of "Firefo
 * Install dependencies with `pip3 install -r requirements.txt`
 * `cd src`
 * Run with `python3 i3_app_list.py`
+* To add custom names, simple rename the workspace (with `i3-msg 'rename workspace to "custom name"'`)
+    - use a keybind and get input through `i3-input`, `dmenu`, `rofi` or equivalent
+        - example: `i3-msg "rename workspace to \"$(echo | dmenu)\""`
+    - to remove the custom name, repeat the above with whitespace as custom name
+        - `i3-msg 'rename workspace to " "'`
+    - one small caveat: the custom name cannot:
+        1. be equal to `<num>`
+        2. start with `<num><sep>`  
+        (where `<num>` is the workspace number and `<sep>` is the separator  
+            \[`parts.separator` in [settings.yaml](src/settings.yaml)\])
 
 # Support
 The list of supported applications is always growing, mostly as I start using something new.  
@@ -77,7 +88,8 @@ Currently supported applications:
 * ida
 * steam
 * burp suite
-* gephi
+* gephi  
+  
 If something you use is not on this list (which is very probable), see [extending](#extending).
 
 # Extending
