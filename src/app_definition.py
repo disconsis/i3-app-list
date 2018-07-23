@@ -106,6 +106,9 @@ class AppDefinition(metaclass=StaticMethodMeta):
     def is_gephi(app):
         return "Gephi" in app.class_
 
+    def is_zeal(app):
+        return app.class_ == "Zeal"
+
 
 def get_glyph(app, glyphs):
     """choose a glyph for the app.

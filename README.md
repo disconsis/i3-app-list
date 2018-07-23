@@ -89,6 +89,7 @@ Currently supported applications:
 * steam
 * burp suite
 * gephi  
+* zeal
   
 If something you use is not on this list (which is very probable), see [extending](#extending).
 
