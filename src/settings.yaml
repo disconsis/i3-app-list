@@ -35,7 +35,7 @@ glyphs:
     download_manager:       
     browser:                
     tor:                    
-    ebook_reader:           
+    pdf_reader:             
     virtual_machine:        
     media_player:           
     wireshark:              

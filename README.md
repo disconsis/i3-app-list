@@ -55,9 +55,10 @@ Currently supported applications:
     * google chrome
     * qutebrowser
     * tor
-* ebook readers
+* pdf viewers
     * okular
     * zathura
+    * foxit
 * virtual machines
     * virtual box
     * vmware
@@ -65,7 +66,7 @@ Currently supported applications:
     * vlc
     * mplayer
 * wireshark
-* terminalS
+* terminals
     * gnome terminal
     * urxvt
     * xterm

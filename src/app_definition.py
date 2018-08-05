@@ -52,8 +52,8 @@ class AppDefinition(metaclass=StaticMethodMeta):
     def is_tor(app):
         return app.class_ == "Tor Browser"
 
-    def is_ebook_reader(app):
-        return app.class_ in ("Okular", "Zathura")
+    def is_pdf_reader(app):
+        return app.class_ in ("Okular", "Zathura", "Foxit Reader")
 
     def is_virtual_machine(app):
         return app.class_ in \
