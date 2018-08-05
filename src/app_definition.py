@@ -89,7 +89,7 @@ class AppDefinition(metaclass=StaticMethodMeta):
     def is_android_studio(app):
         return app.class_ == "jetbrains-studio" \
             and app.instance_ == "sun-awt-X11-XFramePeer" \
-            and "Android Studio" in app.name.split(" - ")[-1]
+            and app.name and "Android Studio" in app.name.split(" - ")[-1]
 
     def is_skype(app):
         return app.class_ == "Skype"
@@ -104,7 +104,7 @@ class AppDefinition(metaclass=StaticMethodMeta):
         return app.name and app.name.startswith("Burp Suite")
 
     def is_gephi(app):
-        return "Gephi" in app.class_
+        return app.class_ and "Gephi" in app.class_
 
     def is_zeal(app):
         return app.class_ == "Zeal"
