@@ -383,7 +383,8 @@ def main():
     if args.list_apps:
         list_applications()
     else:
-        with daemon.DaemonContext(working_directory=os.getcwd()):
+        with daemon.DaemonContext(
+                working_directory=os.path.dirname(__file__)):
             run(args)
 
 

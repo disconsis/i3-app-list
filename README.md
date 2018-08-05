@@ -32,18 +32,14 @@ For example, we choose the `browser` glyph if the window class is any of "Firefo
 * Clone this repo
 * `cd <path-to-repo>`
 * Install dependencies with `pip3 install -r requirements.txt`
-* `cd src`
-* Run with `python3 i3_app_list.py`
+* `python3 src/i3_app_list.py`
+* set for autostarting with i3 by placing `exec --no-startup-id python3 <path-to-repo>/src/i3_app_list.py` in `~/.config/i3/config`
 * To add custom names, simple rename the workspace (with `i3-msg 'rename workspace to "custom name"'`)
-    - use a keybind and get input through `i3-input`, `dmenu`, `rofi` or equivalent
-        - example: `i3-msg "rename workspace to \"$(echo | dmenu)\""`
+    - use a keybind and get input through `i3-input`, `dmenu`, `rofi` or equivalent - place the following into `~/.config/i3/config`, and trigger with `$mod+n`
+        - `bindsym $mod+n exec i3-input -F 'rename workspace to "%s"' -P "workspace name: "`
     - to remove the custom name, repeat the above with whitespace as custom name
-        - `i3-msg 'rename workspace to " "'`
-    - one small caveat: the custom name cannot:
-        1. be equal to `<num>`
-        2. start with `<num><sep>`  
-        (where `<num>` is the workspace number and `<sep>` is the separator  
-            \[`parts.separator` in [settings.yaml](src/settings.yaml)\])
+        - `i3-msg 'rename workspace to " "'`, or with any of the above binds, simply enter a space in the input box
+        - one small caveat: the custom name cannot be equal to the workspace number, since this changes the workspace number [*feature incoming*]
 
 # Support
 The list of supported applications is always growing, mostly as I start using something new.  
