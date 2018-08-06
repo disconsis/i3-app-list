@@ -9,8 +9,31 @@ import yamale
 import munch
 import os
 from collections import defaultdict
-from functools import partial
+from functools import wraps
 import daemon
+import logging
+from logging.handlers import RotatingFileHandler
+import atexit
+import pprint
+
+LOG_FILE = "/tmp/i3_app_list.log"
+logger = None
+
+# set up logger
+def setup_logging():
+    logging.raiseExceptions = False
+    global logger
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+    rot_handler = RotatingFileHandler(
+        LOG_FILE, backupCount=1, maxBytes=10*(1024**2),
+    )
+    rot_handler.setFormatter(logging.Formatter(
+        "%(asctime)s: [%(levelname)s] %(message)s", "%b %d %H:%M:%S"
+    ))
+    logger.addHandler(rot_handler)
+    logger.info("--- starting ---")
+    atexit.register(lambda: logger.info("--- exiting ---"))
 
 
 def color(text, fgcolor=None, bgcolor=None):
@@ -41,6 +64,25 @@ class ValidationError(Exception):
     pass
 
 
+def log_exceptions(func):
+    @wraps(func)
+    def wrapped(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.exception(
+                ("{funcname}({_args}, {_kwargs}) "
+                 "raised {exc_class}: {exc_msg}").format(
+                     funcname=func.__name__,
+                     _args=', '.join(map(repr, args)),
+                     _kwargs=', '.join(map(repr, kwargs)),
+                     exc_class=type(e).__name__,
+                     exc_msg=e,
+                 )
+            )
+    return wrapped
+
+
 class App:
 
     """Application class to extend :class`i3ipc.i3ipc.Con`."""
@@ -66,15 +108,14 @@ class App:
         return getattr(self._con, attr)
 
     @property
+    @log_exceptions
     def glyph(self):
         """get a small string representation for the app.
         try to get it from the user-customized module
         :module:`app_definition`. in case of exceptions,
-        simply return the `undefined` glyph.
-        if `debug` is true, break the program for everything other
-        than an AttributeError (since that can be caused by the config
-        file not having an entry for an glyph class name referenced by
-        the module :module:`app_definition`)
+        simply return the `undefined` glyph.  if `debug`
+        is true, break the program (so that the dev knows
+        that app definitions are broken).
 
         :return: repr for the app
         :rtype: str
@@ -88,6 +129,17 @@ class App:
                 raise e
 
         return self.settings.glyphs.get('undefined')
+
+
+    def __repr__(self):
+        return "<{0}:\n{1}>".format(
+            type(self).__name__,
+            pprint.pformat({
+                "name": self.name,
+                "class_": self.class_,
+                "instance_": self.instance_,
+            }),
+        )
 
 
     def __str__(self):
@@ -284,7 +336,6 @@ class Tree:
         for workspace in self.workspaces:
             workspace.output()
 
-
 class Watcher:
     """Watch for i3 events and rename workspaces."""
 
@@ -385,6 +436,7 @@ def main():
     else:
         with daemon.DaemonContext(
                 working_directory=os.path.dirname(os.path.abspath(__file__))):
+            setup_logging()
             run(args)
 
 
