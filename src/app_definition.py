@@ -109,6 +109,9 @@ class AppDefinition(metaclass=StaticMethodMeta):
     def is_zeal(app):
         return app.class_ == "Zeal"
 
+    def is_gitk(app):
+        return app.class_ == "Gitk"
+
 
 def get_glyph(app, glyphs):
     """choose a glyph for the app.

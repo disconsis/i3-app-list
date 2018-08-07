@@ -87,6 +87,7 @@ Currently supported applications:
 * burp suite
 * gephi  
 * zeal
+* gitk
   
 If something you use is not on this list (which is very probable), see [extending](#extending).
 
