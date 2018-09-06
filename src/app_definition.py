@@ -115,6 +115,9 @@ class AppDefinition(metaclass=StaticMethodMeta):
     def is_bless(app):
         return app.class_ == "Bless"
 
+    def is_discord(app):
+        return app.class_ == "discord"
+
 
 def get_glyph(app, glyphs):
     """choose a glyph for the app.
