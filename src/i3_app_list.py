@@ -82,6 +82,10 @@ def color_cairo(text, fgcolor=None, bgcolor=None):
     )
 
 
+def color(backend, *args):
+    return {"pango": color_pango, "cairo": color_cairo}[backend](*args)
+
+
 class ValidationError(Exception):
     """exception for invalid data"""
     pass
@@ -171,7 +175,7 @@ class App:
         """
         color_group = self.settings.apps.focused if self.focused \
             else self.settings.apps.unfocused
-        return color_cairo(self.glyph, color_group.fg, color_group.bg)
+        return color(self.settings.backend, self.glyph, color_group.fg, color_group.bg)
 
 
 class Settings:
@@ -218,12 +222,14 @@ class Settings:
         """mofify object's attrs to more sensible data strucutres"""
 
         # create separators from settings
-        self.parts.separator = color_cairo(
+        self.parts.separator = color(
+            self.backend,
             self.parts.separator.str,
             self.parts.separator.fg,
             self.parts.separator.bg,
         )
-        self.apps.separator = color_cairo(
+        self.apps.separator = color(
+            self.backend,
             self.apps.separator.str,
             self.apps.separator.fg,
             self.apps.separator.bg,
@@ -358,6 +364,7 @@ class Tree:
         """print tree to bar."""
         for workspace in self.workspaces:
             workspace.output()
+
 
 class Watcher:
     """Watch for i3 events and rename workspaces."""

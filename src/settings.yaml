@@ -13,6 +13,8 @@
 
 debug: true
 
+backend: "cairo"
+
 parts:
     separator:
         str: ": "
