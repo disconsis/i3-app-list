@@ -1,5 +1,7 @@
 debug: bool()
 
+backend: enum("pango", "cairo")
+
 parts:
     separator:
         str: str()

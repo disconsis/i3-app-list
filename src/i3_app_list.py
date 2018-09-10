@@ -36,10 +36,10 @@ def setup_logging():
     atexit.register(lambda: logger.info("--- exiting ---"))
 
 
-def color(text, fgcolor=None, bgcolor=None):
-    """return text formatted with foreground and background
-    color tags. does not add foreground tag if fgcolor is None.
-    same for bgcolor.
+def color_pango(text, fgcolor=None, bgcolor=None):
+    """return text formatted with pango backend with foreground and
+    background color tags. does not add foreground tag if fgcolor is
+    None. same for bgcolor.
 
     :param text: string to be colored
     :type text: str
@@ -57,6 +57,33 @@ def color(text, fgcolor=None, bgcolor=None):
     return "<span {fg} {bg}>{text}</span>".format(
         fg=fg_tag, bg=bg_tag, text=text,
     )
+
+
+def color_cairo(text, fgcolor=None, bgcolor=None):
+    """return text formatted with cairo backend with foreground and
+    background color tags. does not add foreground tag if fgcolor is
+    None. same for bgcolor.
+
+    :param text: string to be colored
+    :type text: str
+    :param fgcolor: foreground color
+    :type fgcolor: str or None
+    :param bgcolor: background color
+    :type bgcolor: str or None
+    :returns: color tagged text
+    :rtype: str
+    """
+    return "{fg_start}{bg_start}{text}{fg_end}{bg_end}".format(
+        fg_start="%{{F{0}}}".format(fgcolor) if fgcolor is not None else "",
+        bg_start="%{{B{0}}}".format(bgcolor) if bgcolor is not None else "",
+        text=text,
+        fg_end="%{F-}" if fgcolor is not None else "",
+        bg_end="%{B-}" if bgcolor is not None else "",
+    )
+
+
+def color(backend, *args):
+    return {"pango": color_pango, "cairo": color_cairo}[backend](*args)
 
 
 class ValidationError(Exception):
@@ -148,7 +175,7 @@ class App:
         """
         color_group = self.settings.apps.focused if self.focused \
             else self.settings.apps.unfocused
-        return color(self.glyph, color_group.fg, color_group.bg)
+        return color(self.settings.backend, self.glyph, color_group.fg, color_group.bg)
 
 
 class Settings:
@@ -196,11 +223,13 @@ class Settings:
 
         # create separators from settings
         self.parts.separator = color(
+            self.backend,
             self.parts.separator.str,
             self.parts.separator.fg,
             self.parts.separator.bg,
         )
         self.apps.separator = color(
+            self.backend,
             self.apps.separator.str,
             self.apps.separator.fg,
             self.apps.separator.bg,
@@ -335,6 +364,7 @@ class Tree:
         """print tree to bar."""
         for workspace in self.workspaces:
             workspace.output()
+
 
 class Watcher:
     """Watch for i3 events and rename workspaces."""
