@@ -10,6 +10,7 @@ config file under glyphs with "{app_name}: {glyph}"
 """
 
 import inspect
+import re
 
 
 def is_app_definition(f):
@@ -63,6 +64,13 @@ class AppDefinition(metaclass=StaticMethodPriorityMeta):
 
     def is_browser(app):
         return app.class_ in ("Firefox", "Google-chrome", "qutebrowser")
+
+    youtube_re = re.compile(r"(^(\(\d+\))?YouTube)|(- YouTube)")
+
+    @priority(5)
+    def is_youtube(app):
+        return AppDefinition.is_browser(app) \
+            and AppDefinition.youtube_re.search(app.name)
 
     def is_tor(app):
         return app.class_ == "Tor Browser"

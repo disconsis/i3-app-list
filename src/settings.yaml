@@ -36,6 +36,7 @@ apps:
 glyphs:
     download_manager:       
     browser:                
+    youtube:                
     tor:                    
     pdf_reader:             
     virtual_machine:        
