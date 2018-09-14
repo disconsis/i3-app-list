@@ -20,16 +20,27 @@ def get_app_name(app_def):
     return app_def.__name__[3:]
 
 
-class StaticMethodMeta(type):
-    """convert all methods of a deriving class into staticmethods"""
+def priority(priority_):
+    """set priority of app definitions. priority defaults to 0."""
+    def wrapper(fn):
+        fn.priority = priority_
+        return fn
+    return wrapper
+
+
+class StaticMethodPriorityMeta(type):
+    """convert all methods of a deriving class into staticmethods,
+    and default their priorities to 0."""
     def __init__(cls, name, bases, attrs):
         for attr in attrs.values():
             if is_app_definition(attr):
+                if not hasattr(attr, "priority"):
+                    attr.priority = 0
                 attr = staticmethod(attr)
         super().__init__(name, bases, attrs)
 
 
-class AppDefinition(metaclass=StaticMethodMeta):
+class AppDefinition(metaclass=StaticMethodPriorityMeta):
     """class for app definitions.
 
     all the methods in this class are converted to staticmethods through
@@ -41,6 +52,10 @@ class AppDefinition(metaclass=StaticMethodMeta):
     to get access to the app's window title, window class string, and
     window instance string, in addition to other attributes of
     `i3ipc.i3ipc.Con`.
+
+    use the `priority` decorator to increase the priority of an app
+    definition. the default priority of each definition is 0. an app
+    definition is evaluated before all others with a lower priority.
     """
 
     def is_download_manager(app):
@@ -143,6 +158,7 @@ def get_glyph(app, glyphs):
         AppDefinition.__dict__.values()
         if is_app_definition(attr)
     ]
+    app_definitions.sort(key=lambda f: f.priority, reverse=True)
     for app_def_func in app_definitions:
         app_name = get_app_name(app_def_func)
         if app_name in glyphs and app_def_func(app):
