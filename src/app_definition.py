@@ -76,7 +76,7 @@ class AppDefinition(metaclass=StaticMethodPriorityMeta):
         return app.class_ == "Tor Browser"
 
     def is_pdf_reader(app):
-        return app.class_ in ("Okular", "Zathura", "Foxit Reader")
+        return app.class_ in ("Okular", "Zathura", "Foxit Reader", "MuPDF")
 
     def is_virtual_machine(app):
         return app.class_ in \

@@ -55,6 +55,7 @@ Currently supported applications:
     * okular
     * zathura
     * foxit
+    * mupdf
 * virtual machines
     * virtual box
     * vmware
