@@ -141,6 +141,9 @@ class AppDefinition(metaclass=StaticMethodPriorityMeta):
     def is_discord(app):
         return app.class_ == "discord"
 
+    def is_todoist(app):
+        return app.class_ == "todoist"
+
 
 def get_glyph(app, glyphs):
     """choose a glyph for the app.
