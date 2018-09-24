@@ -15,6 +15,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 import atexit
 import pprint
+import pickle
 
 LOG_FILE = "/tmp/i3_app_list.log"
 logger = None
@@ -350,6 +351,12 @@ class Tree:
             if workspace.id == _id:
                 return workspace
 
+    def get_workspace_by_num(self, num):
+        """get a workspace from the tree which has the given num."""
+        for workspace in self.workspaces:
+            if workspace.num == num:
+                return workspace
+
     def set_workspace_num(self, _id, num):
         """set the number of a workspace which has the given id.
 
@@ -420,14 +427,59 @@ class Watcher:
         self.tree = Tree(self.i3, self.settings, self.custom_names)
         self.tree.set_workspace_num(event_ws.id, workspace_num)
         self.tree.output()
+        self.save_names()
 
     def rename_everything(self, *args):
         """get a new tree and print every workspace to bar."""
         self.tree = Tree(self.i3, self.settings, self.custom_names)
         self.tree.output()
 
+    def read_saved_names(self):
+        """read saved custom names from save file to populate custom
+        names.
+        """
+        if self.settings.save_file is None:
+            return
+
+        try:
+            with open(self.settings.save_file, "rb") as fp:
+                names = pickle.load(fp)
+        except Exception as e:
+            logger.warning(
+                ("Error while reading saved "
+                 "custom names from file {}: {}").format(
+                    self.settings.save_file, e))
+            return
+        else:
+            for num, custom_name in names.items():
+                workspace = self.tree.get_workspace_by_num(num)
+                workspace.custom_name = custom_name
+                self.custom_names[workspace.id] = custom_name
+
+
+    def save_names(self):
+        """write a pickled dict of workspace names: custom names to
+        a save file specified by settings.
+        """
+        if self.settings.save_file is None:
+            return
+
+        names = {
+            workspace.num: workspace.custom_name
+            for workspace in self.tree.workspaces
+        }
+        try:
+            with open(self.settings.save_file, "wb") as fp:
+                pickle.dump(names, fp)
+        except Exception as e:
+            logger.critical(
+                "Error while writing custom names to file {}: {}".format(
+                    self.settings.save_file, e))
+
     def run(self):
-        self.rename_everything()
+        self.tree = Tree(self.i3, self.settings, custom_names={})
+        self.read_saved_names()
+        self.tree.output()
         self.i3.main()
 
 
