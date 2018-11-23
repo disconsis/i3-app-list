@@ -92,6 +92,7 @@ Currently supported applications:
 * bless
 * discord
 * todoist
+* inkscape
   
 If something you use is not on this list (which is very probable), see [extending](#extending).
 

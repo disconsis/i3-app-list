@@ -144,6 +144,9 @@ class AppDefinition(metaclass=StaticMethodPriorityMeta):
     def is_todoist(app):
         return app.class_ == "todoist"
 
+    def is_inkscape(app):
+        return app.class_ == "Inkscape"
+
 
 def get_glyph(app, glyphs):
     """choose a glyph for the app.
