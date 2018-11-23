@@ -2,6 +2,8 @@ debug: bool()
 
 backend: enum("pango", "cairo")
 
+save_file: any(str(), null())
+
 parts:
     separator:
         str: str()
